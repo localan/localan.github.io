@@ -1,6 +1,5 @@
 /* Philoshi Hacker — terminal-inspired, accessible, responsive */
-:
-root {
+:root {
   --bg: #0b0f10;
   --bg-alt: #0f1416;
   --fg: #e6fff2;
@@ -20,6 +19,12 @@ body {
   background: var(--bg);
   color: var(--fg);
   line-height: 1.55;
+}
+
+/* Focus visibility */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .container {
@@ -45,12 +50,32 @@ body {
 }
 .brand { color: var(--fg); text-decoration: none; font-weight: 800; letter-spacing: 0.3px; }
 .brand span { color: var(--accent); }
+.nav {
+  display: flex;
+  align-items: center;
+}
 .nav a {
   color: var(--muted);
   margin-left: 18px;
   text-decoration: none;
 }
 .nav a:hover, .nav a:focus { color: var(--fg); }
+
+/* Mobile nav toggle */
+.nav-toggle {
+  display: none;
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+@media (max-width: 720px) {
+  .nav { display: none; position: absolute; right: 20px; top: 60px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 10px; padding: 10px; box-shadow: var(--shadow); }
+  .nav a { display: block; margin: 8px 6px; }
+  .nav.open { display: block; }
+  .nav-toggle { display: inline-block; }
+}
 
 /* Hero */
 .hero { padding: 88px 0 56px; border-bottom: 1px solid var(--border); background: radial-gradient(1000px 600px at 10% -10%, rgba(28, 255, 135, 0.08), transparent); }
@@ -113,3 +138,16 @@ body {
   .nav a { margin-left: 12px; }
 }
 
+/* Prose styles for notes */
+.note, .prose {
+  max-width: 72ch;
+}
+.note p, .prose p { margin: 0 0 1em; }
+.note h2, .prose h2 { margin: 1.4em 0 .4em; font-size: 20px; }
+.note h3, .prose h3 { margin: 1.2em 0 .3em; font-size: 18px; }
+.note code, .prose code { background: #0a1310; border: 1px solid var(--border); padding: .1em .35em; border-radius: 6px; }
+.note pre, .prose pre { background: #08110e; border: 1px solid var(--border); padding: 12px; border-radius: 10px; overflow: auto; }
+.note blockquote, .prose blockquote { border-left: 3px solid var(--accent); margin: 1em 0; padding: .5em 1em; color: var(--muted); background: rgba(28,255,135,.05); }
+.note table, .prose table { width: 100%; border-collapse: collapse; margin: 1em 0; }
+.note th, .note td, .prose th, .prose td { border: 1px solid var(--border); padding: 8px; }
+.note a, .prose a { color: var(--accent); }

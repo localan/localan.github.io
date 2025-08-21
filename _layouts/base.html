@@ -14,7 +14,8 @@
     <header class="site-header">
       <div class="container">
         <a class="brand" href="/">Philoshi<span>_Hacker</span></a>
-        <nav class="nav">
+        <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">Menu</button>
+        <nav id="site-nav" class="nav" role="navigation">
           <a href="/index.html#about">About</a>
           <a href="/index.html#projects">Projects</a>
           <a href="/notes/">Notes</a>
@@ -36,8 +37,17 @@
     </footer>
 
     <script>
+      // Update year
       document.getElementById('year').textContent = new Date().getFullYear();
+      // Mobile nav toggle
+      const toggle = document.querySelector('.nav-toggle');
+      const nav = document.getElementById('site-nav');
+      if (toggle && nav) {
+        toggle.addEventListener('click', () => {
+          const open = nav.classList.toggle('open');
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+      }
     </script>
   </body>
   </html>
-
