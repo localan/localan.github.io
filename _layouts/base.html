@@ -151,11 +151,22 @@
           if (pre.parentElement && pre.parentElement.classList.contains('code-block')) continue;
           const cls = code.className || '';
           const isJS = /language-(js|javascript)/.test(cls);
+          // Language badge
+          let lang = (cls.match(/language-([a-zA-Z0-9]+)/) || [,''])[1] || '';
+          const map = { js: 'JS', javascript: 'JS', ts: 'TS', typescript: 'TS', html: 'HTML', css: 'CSS', json: 'JSON', bash: 'Bash', sh: 'Bash', shell: 'Bash', yaml: 'YAML', yml: 'YAML', md: 'MD', markdown: 'MD' };
+          const badgeText = map[lang] || (lang ? lang.toUpperCase() : '');
 
           const wrap = document.createElement('div');
           wrap.className = 'code-block';
           pre.parentNode.insertBefore(wrap, pre);
           wrap.appendChild(pre);
+
+          if (badgeText) {
+            const b = document.createElement('span');
+            b.className = 'code-badge';
+            b.textContent = badgeText;
+            wrap.appendChild(b);
+          }
 
           const actions = document.createElement('div');
           actions.className = 'code-actions';
@@ -170,6 +181,20 @@
             btnRun.textContent = 'Run';
             btnRun.setAttribute('aria-label', 'Run this JavaScript code');
             actions.insertBefore(btnRun, btnCopy);
+            // Optional Playground button for JS blocks marked as playground
+            const wantsPlayground = code.classList.contains('playground') || /(^|\n)\s*\/\/\s*playground\b/.test(code.textContent) || /(^|\n)\s*\/\*\s*playground\s*\*\//.test(code.textContent);
+            if (wantsPlayground) {
+              const btnOpen = document.createElement('button');
+              btnOpen.textContent = 'Open';
+              btnOpen.setAttribute('aria-label', 'Open in Playground');
+              actions.insertBefore(btnOpen, btnCopy);
+              btnOpen.addEventListener('click', () => {
+                const win = window.open('', '_blank');
+                const src = `<!doctype html><html><head><meta charset="utf-8"><title>Playground</title><style>body{background:#0b0f10;color:#e6fff2;font-family:monospace;margin:0} .row{display:flex;gap:8px;padding:8px} textarea{flex:1;min-height:280px;background:#0a1310;color:#e6fff2;border:1px solid #142024;border-radius:8px;padding:8px} .tools{display:flex;gap:8px} button{background:rgba(28,255,135,.12);border:1px solid #142024;color:#e6fff2;border-radius:8px;padding:8px 10px;cursor:pointer} pre{white-space:pre-wrap;border:1px solid #142024;border-radius:8px;padding:8px;background:#0a1310;margin:8px}</style></head><body><div class='row'><textarea id='src'>${code.textContent.replace(/<\//g,'<\/')}</textarea><div class='tools'><button id='run'>Run ▶</button><button id='copy'>Copy</button></div></div><strong style='margin:0 8px'>Output</strong><pre id='out'></pre><script>const ta=document.getElementById('src');const out=document.getElementById('out');function wrap(c){return `<!doctype html><html><head><meta charset=\"utf-8\"></head><body><pre id=\"o\"></pre><script>const o=document.getElementById('o');const log=(...a)=>{o.textContent+=a.map(x=>typeof x==='object'?JSON.stringify(x,null,2):String(x)).join(' ')+'\\n'};console.log=log;console.error=(...a)=>{log('Error:',...a)};try{\\n${code.textContent.replace(/<\\//g,'<\\/')}\\n}catch(e){console.error(e.message||e)}<\\/script></body></html>`}document.getElementById('run').onclick=()=>{out.textContent='';const ifr=document.createElement('iframe');ifr.setAttribute('sandbox','allow-scripts');ifr.style.width='100%';ifr.style.border='1px solid #142024';ifr.style.borderRadius='8px';document.body.appendChild(ifr);ifr.srcdoc=wrap(ta.value)};document.getElementById('copy').onclick=async()=>{try{await navigator.clipboard.writeText(ta.value)}catch(e){const x=document.createElement('textarea');x.value=ta.value;document.body.appendChild(x);x.select();document.execCommand('copy');document.body.removeChild(x);}}</script></body></html>`;
+                win.document.write(src);
+                win.document.close();
+              });
+            }
             const output = document.createElement('div');
             output.className = 'code-output';
             output.innerHTML = '<strong>Output</strong><pre style="margin:6px 0 0"></pre>';
@@ -201,6 +226,32 @@
             live.textContent = ok ? 'Code copied to clipboard' : 'Copy failed';
             setTimeout(() => { btnCopy.textContent = old; live.textContent = ''; }, 1500);
           });
+        }
+      })();
+
+      // Inline code copy buttons (for short inline code)
+      (function(){
+        function eligible(el){
+          if (!el || !el.textContent) return false;
+          if (el.closest('pre')) return false;
+          const t=el.textContent.trim();
+          return t.length>0 && t.length<=120;
+        }
+        async function copyFallback(text){
+          const ta=document.createElement('textarea'); ta.value=text; ta.setAttribute('readonly',''); ta.style.position='absolute'; ta.style.left='-9999px'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy')}finally{document.body.removeChild(ta)}
+        }
+        async function copy(text){
+          try{ if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text)} else {await copyFallback(text)} return true }catch{ return false }
+        }
+        const nodes=document.querySelectorAll('code');
+        for(const c of nodes){
+          if(!eligible(c)) continue;
+          if(c.dataset.copyAttached==='1') continue;
+          c.dataset.copyAttached='1';
+          const btn=document.createElement('button');
+          btn.className='inline-copy-btn'; btn.type='button'; btn.textContent='Copy'; btn.setAttribute('aria-label','Copy inline code');
+          btn.addEventListener('click', async (e)=>{ e.stopPropagation(); const ok=await copy(c.textContent); const old=btn.textContent; btn.textContent= ok?'Copied':'Failed'; setTimeout(()=>btn.textContent=old,1200); });
+          if(c.nextSibling) c.parentNode.insertBefore(btn,c.nextSibling); else c.parentNode.appendChild(btn);
         }
       })();
     </script>
