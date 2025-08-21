@@ -168,3 +168,6 @@ body {
 .code-actions button:hover { border-color: var(--accent); }
 .code-output { margin-top: 10px; border: 1px dashed var(--border); border-radius: 8px; padding: 10px; background: #0a1310; color: var(--fg); }
 .code-output strong { color: var(--accent); }
+
+/* Screen-reader only utility */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

@@ -8,7 +8,7 @@ Minimal, fast, terminal-inspired personal site with Obsidian-powered notes via J
 - Notes collection (`_notes/`) published at `/notes/`
 - Clean note layout with code/blockquote/table styling
 - 404 page and accessible focus styles
-- Rouge syntax highlighting + JS Run/Copy for `js` code blocks
+- Rouge syntax highlighting + Copy untuk semua bahasa; Run/Copy untuk blok `js`
 - Tags page with client-side filter (`/tags/`)
 - Wiki-links `[[Nama Catatan]]` parsing (client-side) dan Backlinks otomatis
 

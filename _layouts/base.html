@@ -107,51 +107,99 @@
         }
       })();
 
-      // Enhance JS code blocks with Run/Copy
+      // Enhance code blocks: Copy for all, Run for JS
       (function() {
+        // Live region for a11y feedback
+        let live = document.getElementById('copy-live');
+        if (!live) {
+          live = document.createElement('div');
+          live.id = 'copy-live';
+          live.className = 'sr-only';
+          live.setAttribute('aria-live', 'polite');
+          document.body.appendChild(live);
+        }
+
+        async function copyTextFallback(text) {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'absolute';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); }
+          finally { document.body.removeChild(ta); }
+        }
+
+        async function copyToClipboard(text) {
+          try {
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(text);
+            } else {
+              await copyTextFallback(text);
+            }
+            return true;
+          } catch {
+            return false;
+          }
+        }
+
         const codeNodes = document.querySelectorAll('pre > code');
         for (const code of codeNodes) {
+          const pre = code.parentElement;
+          // Avoid double-wrapping
+          if (pre.parentElement && pre.parentElement.classList.contains('code-block')) continue;
           const cls = code.className || '';
           const isJS = /language-(js|javascript)/.test(cls);
-          if (!isJS) continue;
-          const pre = code.parentElement;
+
           const wrap = document.createElement('div');
           wrap.className = 'code-block';
           pre.parentNode.insertBefore(wrap, pre);
           wrap.appendChild(pre);
+
           const actions = document.createElement('div');
           actions.className = 'code-actions';
-          const btnRun = document.createElement('button');
-          btnRun.textContent = 'Run';
           const btnCopy = document.createElement('button');
           btnCopy.textContent = 'Copy';
-          actions.appendChild(btnRun);
+          btnCopy.setAttribute('aria-label', 'Copy code to clipboard');
           actions.appendChild(btnCopy);
+
+          let outPre = null;
+          if (isJS) {
+            const btnRun = document.createElement('button');
+            btnRun.textContent = 'Run';
+            btnRun.setAttribute('aria-label', 'Run this JavaScript code');
+            actions.insertBefore(btnRun, btnCopy);
+            const output = document.createElement('div');
+            output.className = 'code-output';
+            output.innerHTML = '<strong>Output</strong><pre style="margin:6px 0 0"></pre>';
+            outPre = output.querySelector('pre');
+            wrap.appendChild(output);
+
+            btnRun.addEventListener('click', () => {
+              outPre.textContent = '';
+              const iframe = document.createElement('iframe');
+              iframe.setAttribute('sandbox', 'allow-scripts');
+              iframe.style.width = '100%';
+              iframe.style.border = '1px solid var(--border)';
+              iframe.style.borderRadius = '8px';
+              iframe.style.marginTop = '8px';
+              const src = `<!doctype html><html><head><meta charset="utf-8"><style>body{background:#0b0f10;color:#e6fff2;font-family:monospace;padding:8px} pre{white-space:pre-wrap}</style></head><body><pre id="out"></pre><script>const out=document.getElementById('out');const log=(...a)=>{out.textContent+=a.map(x=>typeof x==='object'?JSON.stringify(x,null,2):String(x)).join(' ')+'\n'};console.log=log;console.error=(...a)=>{log('Error:',...a)};try{\n${code.textContent.replace(/<\//g,'<\/')}\n}catch(e){console.error(e.message||e)}</script></body></html>`;
+              const old = wrap.querySelector('iframe');
+              if (old) old.remove();
+              wrap.appendChild(iframe);
+              iframe.srcdoc = src;
+            });
+          }
+
           wrap.appendChild(actions);
-          const output = document.createElement('div');
-          output.className = 'code-output';
-          output.innerHTML = '<strong>Output</strong><pre style="margin:6px 0 0"></pre>';
-          const outPre = output.querySelector('pre');
-          wrap.appendChild(output);
 
           btnCopy.addEventListener('click', async () => {
-            try { await navigator.clipboard.writeText(code.textContent); btnCopy.textContent = 'Copied'; setTimeout(()=>btnCopy.textContent='Copy', 1200); } catch {}
-          });
-
-          btnRun.addEventListener('click', () => {
-            outPre.textContent = '';
-            const iframe = document.createElement('iframe');
-            iframe.setAttribute('sandbox', 'allow-scripts');
-            iframe.style.width = '100%';
-            iframe.style.border = '1px solid var(--border)';
-            iframe.style.borderRadius = '8px';
-            iframe.style.marginTop = '8px';
-            const src = `<!doctype html><html><head><meta charset="utf-8"><style>body{background:#0b0f10;color:#e6fff2;font-family:monospace;padding:8px} pre{white-space:pre-wrap}</style></head><body><pre id="out"></pre><script>const out=document.getElementById('out');const log=(...a)=>{out.textContent+=a.map(x=>typeof x==='object'?JSON.stringify(x,null,2):String(x)).join(' ')+'\n'};console.log=log;console.error=(...a)=>{log('Error:',...a)};try{\n${code.textContent.replace(/<\//g,'<\/')}\n}catch(e){console.error(e.message||e)}</script></body></html>`;
-            // Clear previous iframe if any
-            const old = wrap.querySelector('iframe');
-            if (old) old.remove();
-            wrap.appendChild(iframe);
-            iframe.srcdoc = src;
+            const ok = await copyToClipboard(code.textContent);
+            const old = btnCopy.textContent;
+            btnCopy.textContent = ok ? 'Copied' : 'Failed';
+            live.textContent = ok ? 'Code copied to clipboard' : 'Copy failed';
+            setTimeout(() => { btnCopy.textContent = old; live.textContent = ''; }, 1500);
           });
         }
       })();
