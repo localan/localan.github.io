@@ -37,6 +37,16 @@ jobs:
         with:
           source: .
           destination: ./_site
+      - name: Verify Jekyll output
+        run: |
+          test -f _site/index.html
+          test -f _site/notes/index.html
+          # Ensure Liquid was rendered by checking the sample note title exists in the notes index
+          if ! grep -q "Hello, Obsidian" _site/notes/index.html; then
+            echo "Notes index does not list sample note. Jekyll may not have rendered correctly." >&2
+            echo "Inspect _site/notes/index.html for unrendered Liquid or misconfiguration." >&2
+            exit 1
+          fi
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
