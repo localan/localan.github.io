@@ -1,0 +1,20 @@
+title: Philoshi Hacker
+url: https://localan.github.io
+theme: null
+
+# Output markdown with Kramdown (GitHub Pages default)
+markdown: kramdown
+
+# Notes collection rendered at /notes/
+collections:
+  notes:
+    output: true
+    permalink: /notes/:name/
+
+defaults:
+  - scope:
+      path: ""
+      type: notes
+    values:
+      layout: note
+

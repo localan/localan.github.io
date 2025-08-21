@@ -1,0 +1,26 @@
+---
+layout: base
+title: Notes
+permalink: /notes/
+---
+<section class="section">
+  <div class="container">
+    <h1 style="margin-top:0">Notes</h1>
+    <p class="tagline" style="color:var(--muted)">Rendered from Obsidian Markdown via Jekyll.</p>
+    <ul class="list">
+      {% assign sorted = site.notes | sort: 'date' | reverse %}
+      {% for note in sorted %}
+        <li>
+          <a href="{{ note.url }}">{{ note.title }}</a>
+          {% if note.date %}
+            <span style="color:var(--muted)"> — {{ note.date | date: "%Y-%m-%d" }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+      {% if sorted.size == 0 %}
+        <li>No notes yet. Add Markdown files to <code>_notes/</code>.</li>
+      {% endif %}
+    </ul>
+  </div>
+</section>
+

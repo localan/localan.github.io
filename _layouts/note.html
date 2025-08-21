@@ -1,0 +1,18 @@
+---
+layout: base
+---
+<section class="section">
+  <div class="container">
+    <h1 style="margin-top:0">{{ page.title }}</h1>
+    {% if page.updated or page.date %}
+    <p class="tagline" style="margin-top:-6px;color:var(--muted)">
+      {% assign d = page.updated | default: page.date %}
+      Updated: {{ d | date: "%Y-%m-%d" }}
+    </p>
+    {% endif %}
+    <article class="note">
+      {{ content }}
+    </article>
+  </div>
+</section>
+
