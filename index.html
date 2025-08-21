@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Philoshi Hacker</title>
+    <meta name="description" content="Philoshi Hacker — a minimalist, hacker-green static site." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a class="brand" href="/">Philoshi<span>_Hacker</span></a>
+        <nav class="nav">
+          <a href="#about">About</a>
+          <a href="#projects">Projects</a>
+          <a href="#notes">Notes</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <h1><span class="cursor">></span> echo "Hello, World"</h1>
+          <p class="tagline">Minimal. Fast. Hacker-green on black. Built for thought.</p>
+          <div class="cta">
+            <a class="btn primary" href="#projects">View Projects</a>
+            <a class="btn" href="#about">Learn More</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="section">
+        <div class="container">
+          <h2>About</h2>
+          <p>
+            Philoshi Hacker explores ideas at the edges of software, systems, and
+            philosophy — blending rigorous thinking with practical hacking. This
+            site is a clean, static scaffold ready for your content.
+          </p>
+          <ul class="bullets">
+            <li>Lightweight, no build step required</li>
+            <li>Accessible, responsive, keyboard-friendly</li>
+            <li>Easy to extend with pages and posts</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="projects" class="section alt">
+        <div class="container">
+          <h2>Projects</h2>
+          <div class="cards">
+            <article class="card">
+              <h3>Terminal Theme</h3>
+              <p>Green-on-black CSS theme with monospace typography.</p>
+              <a class="link" href="#">Source soon</a>
+            </article>
+            <article class="card">
+              <h3>Notes Engine</h3>
+              <p>Plain HTML notes with zero build tools.</p>
+              <a class="link" href="#">Docs soon</a>
+            </article>
+            <article class="card">
+              <h3>Playground</h3>
+              <p>Small experiments and micro-demos.</p>
+              <a class="link" href="#">Open sandbox</a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="notes" class="section">
+        <div class="container">
+          <h2>Notes</h2>
+          <p>
+            Drop simple HTML notes into <code>/notes</code>. This section lists them
+            automatically when you add links.
+          </p>
+          <ul class="list" id="notes-list">
+            <!-- Add your note links here -->
+            <li><a href="#">Why static first?</a></li>
+            <li><a href="#">Complexity budgets</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="contact" class="section alt">
+        <div class="container">
+          <h2>Contact</h2>
+          <ul class="list">
+            <li>Email: <a href="mailto:hello@philoshi.hacker">hello@philoshi.hacker</a></li>
+            <li>GitHub: <a href="https://github.com/localan" target="_blank" rel="noreferrer noopener">@localan</a></li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <span>© <span id="year"></span> Philoshi Hacker</span>
+        <span class="sep">•</span>
+        <a href="#top">Back to top</a>
+      </div>
+    </footer>
+
+    <script>
+      // Update year
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+  </html>
+
