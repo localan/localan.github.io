@@ -19,6 +19,7 @@
           <a href="/index.html#about">About</a>
           <a href="/index.html#projects">Projects</a>
           <a href="/notes/">Notes</a>
+          <a href="/tags/">Tags</a>
           <a href="/index.html#contact">Contact</a>
         </nav>
       </div>
@@ -48,6 +49,112 @@
           toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
       }
+      // Build a small notes index for wiki-links
+      window.NOTES_INDEX = [
+        {% for n in site.notes %}
+          { title: {{ n.title | jsonify }}, url: {{ n.url | jsonify }}, slug: {{ n.path | split: '/' | last | split: '.' | first | jsonify }} }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ];
+
+      // Replace [[Wiki Links]] in .note content with anchors using NOTES_INDEX
+      (function() {
+        const container = document.querySelector('.note');
+        if (!container || !window.NOTES_INDEX) return;
+
+        // Build lookup maps
+        const bySlug = Object.create(null);
+        const byTitle = Object.create(null);
+        for (const it of window.NOTES_INDEX) {
+          if (it.slug) bySlug[it.slug.toLowerCase()] = it.url;
+          if (it.title) byTitle[it.title.toLowerCase()] = it.url;
+        }
+
+        // Walk child nodes except code/pre blocks
+        const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
+          acceptNode: (node) => {
+            if (!node.nodeValue || node.nodeValue.indexOf('[[') === -1) return NodeFilter.FILTER_SKIP;
+            // Skip if inside CODE or PRE
+            let p = node.parentElement;
+            while (p) { if (p.tagName === 'CODE' || p.tagName === 'PRE') return NodeFilter.FILTER_SKIP; p = p.parentElement; }
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        });
+
+        const toProcess = [];
+        while (walker.nextNode()) toProcess.push(walker.currentNode);
+
+        for (const textNode of toProcess) {
+          const text = textNode.nodeValue;
+          const frag = document.createDocumentFragment();
+          let idx = 0;
+          const re = /\[\[([^\]]+)\]\]/g;
+          let m;
+          while ((m = re.exec(text))) {
+            const before = text.slice(idx, m.index);
+            if (before) frag.appendChild(document.createTextNode(before));
+            const key = m[1].trim();
+            const href = bySlug[key.toLowerCase()] || byTitle[key.toLowerCase()];
+            const a = document.createElement('a');
+            a.textContent = `[[${key}]]`;
+            a.href = href || '#';
+            if (!href) a.setAttribute('aria-invalid', 'true');
+            frag.appendChild(a);
+            idx = m.index + m[0].length;
+          }
+          const rest = text.slice(idx);
+          if (rest) frag.appendChild(document.createTextNode(rest));
+          textNode.parentNode.replaceChild(frag, textNode);
+        }
+      })();
+
+      // Enhance JS code blocks with Run/Copy
+      (function() {
+        const codeNodes = document.querySelectorAll('pre > code');
+        for (const code of codeNodes) {
+          const cls = code.className || '';
+          const isJS = /language-(js|javascript)/.test(cls);
+          if (!isJS) continue;
+          const pre = code.parentElement;
+          const wrap = document.createElement('div');
+          wrap.className = 'code-block';
+          pre.parentNode.insertBefore(wrap, pre);
+          wrap.appendChild(pre);
+          const actions = document.createElement('div');
+          actions.className = 'code-actions';
+          const btnRun = document.createElement('button');
+          btnRun.textContent = 'Run';
+          const btnCopy = document.createElement('button');
+          btnCopy.textContent = 'Copy';
+          actions.appendChild(btnRun);
+          actions.appendChild(btnCopy);
+          wrap.appendChild(actions);
+          const output = document.createElement('div');
+          output.className = 'code-output';
+          output.innerHTML = '<strong>Output</strong><pre style="margin:6px 0 0"></pre>';
+          const outPre = output.querySelector('pre');
+          wrap.appendChild(output);
+
+          btnCopy.addEventListener('click', async () => {
+            try { await navigator.clipboard.writeText(code.textContent); btnCopy.textContent = 'Copied'; setTimeout(()=>btnCopy.textContent='Copy', 1200); } catch {}
+          });
+
+          btnRun.addEventListener('click', () => {
+            outPre.textContent = '';
+            const iframe = document.createElement('iframe');
+            iframe.setAttribute('sandbox', 'allow-scripts');
+            iframe.style.width = '100%';
+            iframe.style.border = '1px solid var(--border)';
+            iframe.style.borderRadius = '8px';
+            iframe.style.marginTop = '8px';
+            const src = `<!doctype html><html><head><meta charset="utf-8"><style>body{background:#0b0f10;color:#e6fff2;font-family:monospace;padding:8px} pre{white-space:pre-wrap}</style></head><body><pre id="out"></pre><script>const out=document.getElementById('out');const log=(...a)=>{out.textContent+=a.map(x=>typeof x==='object'?JSON.stringify(x,null,2):String(x)).join(' ')+'\n'};console.log=log;console.error=(...a)=>{log('Error:',...a)};try{\n${code.textContent.replace(/<\//g,'<\/')}\n}catch(e){console.error(e.message||e)}</script></body></html>`;
+            // Clear previous iframe if any
+            const old = wrap.querySelector('iframe');
+            if (old) old.remove();
+            wrap.appendChild(iframe);
+            iframe.srcdoc = src;
+          });
+        }
+      })();
     </script>
   </body>
   </html>

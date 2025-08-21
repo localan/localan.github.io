@@ -1,0 +1,62 @@
+---
+layout: base
+title: Tags
+permalink: /tags/
+---
+<section class="section">
+  <div class="container">
+    <h1 style="margin-top:0">Tags</h1>
+    <p class="tagline" style="color:var(--muted)">Filter catatan berdasarkan tag.</p>
+
+    {% assign tag_string = "" %}
+    {% for n in site.notes %}
+      {% if n.tags %}
+        {% for t in n.tags %}
+          {% assign tag_string = tag_string | append: t | append: "," %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+    {% assign tags = tag_string | split: "," | uniq | sort %}
+
+    <div id="tags-cloud" style="margin:10px 0 18px; display:flex; flex-wrap:wrap; gap:8px">
+      <button class="btn" data-tag="" aria-pressed="true">All</button>
+      {% for t in tags %}
+        {% if t != "" %}
+          <button class="btn" data-tag="{{ t }}">{{ t }}</button>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <ul id="notes-list" class="list">
+      {% assign sorted = site.notes | sort: 'date' | reverse %}
+      {% for n in sorted %}
+        {% assign tlist = n.tags | join: ' ' %}
+        <li data-tags="{{ tlist }}">
+          <a href="{{ n.url }}">{{ n.title }}</a>
+          {% if n.tags and n.tags.size > 0 %}
+            <span style="color:var(--muted)"> — {{ n.tags | join: ', ' }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<script>
+  (function(){
+    const buttons = document.querySelectorAll('#tags-cloud [data-tag]');
+    const list = document.getElementById('notes-list');
+    const items = Array.from(list.querySelectorAll('li'));
+    function setActive(tag) {
+      buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.tag === tag ? 'true' : 'false'));
+      items.forEach(li => {
+        const tags = (li.getAttribute('data-tags')||'').split(/\s+/);
+        const match = !tag || tags.includes(tag);
+        li.style.display = match ? '' : 'none';
+      });
+    }
+    buttons.forEach(b => b.addEventListener('click', () => setActive(b.dataset.tag)));
+    setActive('');
+  })();
+</script>
+

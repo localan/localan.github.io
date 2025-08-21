@@ -151,3 +151,20 @@ body {
 .note table, .prose table { width: 100%; border-collapse: collapse; margin: 1em 0; }
 .note th, .note td, .prose th, .prose td { border: 1px solid var(--border); padding: 8px; }
 .note a, .prose a { color: var(--accent); }
+
+/* Rouge syntax highlighting (minimal, terminal tone) */
+.highlight { background: #0a1310; border: 1px solid var(--border); border-radius: 10px; padding: 12px; overflow: auto; }
+.highlight .c { color: #6a8f78; font-style: italic; } /* Comment */
+.highlight .k { color: #1cff87; font-weight: 600; } /* Keyword */
+.highlight .s { color: #c3f7d8; } /* String */
+.highlight .na, .highlight .nf { color: #9cf7c6; } /* Name/Function */
+.highlight .o, .highlight .p { color: #cde9db; } /* Operator/Punctuation */
+.highlighter-rouge code { background: transparent; border: none; padding: 0; }
+
+/* Code actions (Run/Copy) */
+.code-block { position: relative; }
+.code-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 8px; }
+.code-actions button { cursor: pointer; background: rgba(28,255,135,0.12); color: var(--fg); border: 1px solid var(--border); padding: 6px 8px; border-radius: 8px; font-family: inherit; }
+.code-actions button:hover { border-color: var(--accent); }
+.code-output { margin-top: 10px; border: 1px dashed var(--border); border-radius: 8px; padding: 10px; background: #0a1310; color: var(--fg); }
+.code-output strong { color: var(--accent); }

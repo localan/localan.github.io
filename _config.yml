@@ -4,6 +4,13 @@ theme: null
 
 # Output markdown with Kramdown (GitHub Pages default)
 markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    line_numbers: false
 
 # Notes collection rendered at /notes/
 collections:

@@ -13,6 +13,27 @@ layout: base
     <article class="note">
       {{ content }}
     </article>
+    <hr style="border:0;border-top:1px solid var(--border);margin:28px 0">
+    <div class="prose">
+      <h3>Backlinks</h3>
+      {% assign fname = page.path | split:'/' | last %}
+      {% assign slug = fname | split:'.' | first %}
+      {% assign found = false %}
+      <ul class="list">
+      {% for n in site.notes %}
+        {% if n.url != page.url %}
+          {% assign pat1 = "[[" | append: page.title | append: "]]" %}
+          {% assign pat2 = "[[" | append: slug | append: "]]" %}
+          {% if n.content contains pat1 or n.content contains pat2 %}
+            {% assign found = true %}
+            <li><a href="{{ n.url }}">{{ n.title }}</a></li>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {% if found == false %}
+        <li>Tidak ada backlink yang ditemukan.</li>
+      {% endif %}
+      </ul>
+    </div>
   </div>
 </section>
-

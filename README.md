@@ -8,12 +8,16 @@ Minimal, fast, terminal-inspired personal site with Obsidian-powered notes via J
 - Notes collection (`_notes/`) published at `/notes/`
 - Clean note layout with code/blockquote/table styling
 - 404 page and accessible focus styles
+- Rouge syntax highlighting + JS Run/Copy for `js` code blocks
+- Tags page with client-side filter (`/tags/`)
+- Wiki-links `[[Nama Catatan]]` parsing (client-side) dan Backlinks otomatis
 
 ## Structure
 - `index.html` — Home page (uses `_layouts/base.html`)
 - `_layouts/` — Shared `base` and `note` layouts
 - `_notes/` — Markdown notes rendered to `/notes/:name/`
 - `notes/index.html` — Notes index page
+- `tags/index.html` — Tags index + filter
 - `assets/styles.css` — Site styles
 - `_config.yml` — Jekyll configuration
 
@@ -28,6 +32,15 @@ Minimal, fast, terminal-inspired personal site with Obsidian-powered notes via J
 3. Commit and push — GitHub Pages renders notes at `/notes/`.
 
 Tip: Use the Obsidian Git plugin to sync changes automatically.
+
+### Wiki-links `[[...]]`
+- Tulis tautan seperti `[[sejarah-hacker]]` atau `[[Sejarah Hacker — Dari MIT ke Open Source]]`.
+- Pada saat muat halaman, skrip akan mengubah pola tersebut menjadi tautan ke catatan yang sesuai (berdasarkan slug atau judul).
+- Halaman catatan juga menampilkan “Backlinks” (catatan lain yang menyebutkan Anda) otomatis saat build.
+
+### Tags
+- Tambahkan `tags: [a, b]` di front matter.
+- Lihat semua tag dan filter catatan: `/tags/`.
 
 ## Local Preview
 You can view the static files directly, or run a simple server:
