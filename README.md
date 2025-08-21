@@ -40,7 +40,12 @@ python3 -m http.server
 To run Jekyll locally (optional), install Ruby/Jekyll and run `bundle exec jekyll serve`. GitHub Pages will build the site for you on push, even if you don’t run Jekyll locally.
 
 ## Deploy
-This repository is a user site (`localan.github.io`). Push to `main` and Pages serves from the repo root automatically.
+This repository is a user site (`localan.github.io`). Push to `main` and GitHub Actions builds with Jekyll and deploys to Pages.
+
+### GitHub Actions
+- Workflow: `.github/workflows/static.yml`
+- Steps: checkout → configure Pages → build with Jekyll → upload artifact → deploy
+- Output URL: printed in the workflow summary (environment `github-pages`)
 
 ## Customize
 - Colors/spacing: edit `assets/styles.css`
@@ -50,4 +55,3 @@ This repository is a user site (`localan.github.io`). Push to `main` and Pages s
 
 ## License
 Public content is yours; code for this scaffold is provided as-is.
-
