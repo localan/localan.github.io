@@ -9,7 +9,8 @@ markdown: kramdown
 collections:
   notes:
     output: true
-    permalink: /notes/:name/
+    # Include subfolders in URLs (e.g., /notes/2025/sejarah-hacker/)
+    permalink: /notes/:path/
 
 defaults:
   - scope:
@@ -17,4 +18,3 @@ defaults:
       type: notes
     values:
       layout: note
-

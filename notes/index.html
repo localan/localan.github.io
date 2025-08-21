@@ -6,21 +6,38 @@ permalink: /notes/
 <section class="section">
   <div class="container">
     <h1 style="margin-top:0">Notes</h1>
-    <p class="tagline" style="color:var(--muted)">Rendered from Obsidian Markdown via Jekyll.</p>
-    <ul class="list">
-      {% assign sorted = site.notes | sort: 'date' | reverse %}
-      {% for note in sorted %}
-        <li>
-          <a href="{{ note.url }}">{{ note.title }}</a>
-          {% if note.date %}
-            <span style="color:var(--muted)"> — {{ note.date | date: "%Y-%m-%d" }}</span>
-          {% endif %}
-        </li>
-      {% endfor %}
-      {% if sorted.size == 0 %}
-        <li>No notes yet. Add Markdown files to <code>_notes/</code>.</li>
+    <p class="tagline" style="color:var(--muted)">Rendered from Obsidian Markdown via Jekyll. Dikelompokkan per tahun (folder atau tanggal).</p>
+
+    {% assign sorted = site.notes | sort: 'date' | reverse %}
+    {% assign current_year = '' %}
+
+    {% for note in sorted %}
+      {%- comment -%} Ambil tahun dari date; jika kosong, deteksi dari path folder (mis. _notes/2025/...) {%- endcomment -%}
+      {% assign year = note.date | date: "%Y" %}
+      {% if year == '' or year == ' ' %}
+        {% assign parts = note.path | split: '/' %}
+        {% assign year = parts[1] %}
       {% endif %}
-    </ul>
+
+      {% if year != current_year %}
+        {% unless forloop.first %}</ul>{% endunless %}
+        <h2 style="margin:28px 0 10px">{{ year }}</h2>
+        <ul class="list">
+        {% assign current_year = year %}
+      {% endif %}
+
+      <li>
+        <a href="{{ note.url }}">{{ note.title }}</a>
+        {% if note.date %}
+          <span style="color:var(--muted)"> — {{ note.date | date: "%Y-%m-%d" }}</span>
+        {% endif %}
+      </li>
+    {% endfor %}
+
+    {% if sorted.size > 0 %}</ul>{% endif %}
+
+    {% if sorted.size == 0 %}
+      <ul class="list"><li>Belum ada catatan. Tambahkan Markdown ke <code>_notes/</code>.</li></ul>
+    {% endif %}
   </div>
 </section>
-
